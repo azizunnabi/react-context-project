@@ -1,17 +1,22 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const ShopContext = createContext();
 
 const ShopProvider = ({children}) => {
-   const [data, setData] = useState({
-    name: 'Rehan', friends: ['aziz', 'shakil']
-   })
-   const [user, setUser] = useState({
-    id: 1,
-    name: 'javed'
-   })
+   const [state, setState] = useState({
+      products: [],
+      loader: true
+   });
+   useEffect(() => {
+     axios.get('https://fakestoreapi.com/products').then(({data}) => {
+      setState({loader: false, products: data})
+     }).catch(err => {
+      setState({...state, loader: false});
+     })
+   }, [])
    return (
-    <ShopContext.Provider value={{data, setData, user, setUser}}>
+    <ShopContext.Provider value={{state}}>
    {children}
    </ShopContext.Provider>
    )
